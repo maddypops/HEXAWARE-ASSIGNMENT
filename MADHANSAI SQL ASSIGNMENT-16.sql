@@ -258,3 +258,98 @@ select email,count(*) from users
 group by email
 having count(*) > 1;
 
+
+
+
+
+
+
+
+-----------------1NF---------------------
+
+create table user_bookings (
+    user_id int,
+    booking_id int,
+    primary key (user_id, booking_id),
+    foreign key (user_id) references users(user_id),
+    foreign key (booking_id) references booking(booking_id)
+);
+
+
+
+-----------------2NF----------------------
+
+create table booking (
+    booking_id int primary key,
+    user_id int,
+    show_id int,
+    booking_datetime datetime,
+    total_cost decimal(10,2),
+    foreign key (user_id) references users(user_id),
+    foreign key (show_id) references show(show_id)
+);
+
+create table booking_fooditems (
+    booking_id int,
+    item_id int,
+    quantity int,
+    foreign key (booking_id) references booking(booking_id),
+    foreign key (item_id) references fooditem(item_id)
+);
+
+
+-------------------3NF------------------------
+create table genres (
+    genre_id int primary key,
+    genre_name varchar(50)
+);
+
+create table movie (
+    movie_id int primary key,
+    title varchar(200),
+    genre_id int,
+    rating decimal(3,1),
+    status varchar(30),
+    poster_image_url varchar(300),
+    foreign key (genre_id) references genres(genre_id)
+);
+
+
+
+
+
+---------------insert-sample-data----------------
+insert into genres 
+values (1, 'action'), (2, 'comedy');
+
+
+insert into movie 
+values 
+(1, 'avengers', 1, 8.5, 'released', 'url1'),
+(2, 'the mask', 2, 7.0, 'released', 'url2');
+
+insert into users 
+values (1, 'alice', 'alice@mail.com', 9876543210);
+
+
+insert into booking 
+values (1, 1, 1, getdate(), 450.00);
+
+
+insert into booking_fooditems 
+values (1, 1, 2);
+
+--------------------retrival-------------------------
+
+select u.name, b.booking_id, b.total_cost
+from users u
+join booking b on u.user_id = b.user_id;
+
+
+select m.title, g.genre_name
+from movie m
+join genres g on m.genre_id = g.genre_id;
+
+select booking_id, sum(quantity) as total_items
+from booking_fooditems
+group by booking_id;
