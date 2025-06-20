@@ -128,3 +128,16 @@ from artwork
 where year between 1900 and 1950;
 
 
+
+delete from orderstable 
+where place=
+	(
+	select place
+	from city
+	where place = 'chennai'
+	);
+
+select e.employee_name
+from employee e
+join orders o on e.employee_id = o.employee_id
+where o.total_amount > 1000;
